@@ -131,6 +131,13 @@
   if(merged.length){let extra='';for(let i=0;i<count;i++)for(const m of merged)extra+=`<mergeCell ref="${m[1]}${at+i}:${m[3]}${at+i}"/>`;xml=xml.replace('</mergeCells>',extra+'</mergeCells>').replace(/<mergeCells count="(\d+)"/,(_,n)=>`<mergeCells count="${Number(n)+count*merged.length}"`);}
   s.xml=xml;s.cells=parseCells(xml,w.strings);
  }
+ function bathFooterRow(sheet,sn){
+  for(let r=23;r<=25;r++){
+   const styles=['D','E','G','H','I'].map(col=>sheet.cells[col+r]?.style);
+   if(styles[0]!==undefined&&styles.every(style=>style===styles[0])&&sheet.cells['A'+r]?.style!==styles[0])return r;
+  }
+  throw Error('入浴表の明細行数を判定できません：'+sn+'。原本の22行構成を確認してください。');
+ }
  function nextWeekday(date,days){let d=new Date(date+'T12:00:00');for(let i=0;i<7;i++){if(days.includes(d.getDay()))return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;d.setDate(d.getDate()+1);}throw Error('日付が不正です');}
  async function generate(key,state,seed,date) {
   state=WardCore.syncRoomGroups(WardCore.copy(state));
@@ -166,8 +173,13 @@
    hideHelper(w.sheets[sn],'T');
   }
   if(key==='bath'){
-   for(const sn of ['月木am','月木pm','火金am','火金pm'])insertDetailRows(w,sn,sn==='火金pm'?23:22,sn==='火金pm'?1:2);
-   for(const sn of ['月木洗濯表','火金洗濯表']){insertDetailRows(w,sn,24,2);insertDetailRows(w,sn,54,2);}
+   for(const sn of ['月木am','月木pm','火金am','火金pm']){const footer=bathFooterRow(w.sheets[sn],sn),missing=25-footer;if(missing)insertDetailRows(w,sn,footer-1,missing);}
+   for(const sn of ['月木洗濯表','火金洗濯表']){
+    const sheet=w.sheets[sn],first=sheet.cells.B26?0:sheet.cells.B25?1:2;
+    if(first)insertDetailRows(w,sn,26-first,first);
+    const second=sheet.cells.B56?0:sheet.cells.B55?1:2;
+    if(second)insertDetailRows(w,sn,56-second,second);
+   }
    for(const [group,sn] of [['bath-mon-am','月木am'],['bath-mon-pm','月木pm'],['bath-tue-am','火金am'],['bath-tue-pm','火金pm']]){
     const arr=bathSlots(group),day=nextWeekday(date,group.includes('mon')?[1,4]:[2,5]);if(arr.length>22)throw Error('入浴は各枠22行までです。');put(sn,'E1',dateSerial(day),group.endsWith('-pm')?`${group.includes('mon')?'月木':'火金'}am!E1`:undefined);put(sn,'H1',arr.filter(Boolean).length,'COUNTA(B3:B24)');
     for(let i=0;i<22;i++){
