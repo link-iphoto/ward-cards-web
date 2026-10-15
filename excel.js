@@ -141,7 +141,7 @@
    const ns=nameStyles(w,key==='map'?'２階':'元データ');
    const colorOf=p=>p?.nameColor||seed.state.residents.find(x=>x.id===p?.id)?.nameColor||'black';
    const s=key==='map'?'２階':'元データ';for(const slot of seed.slots){const p=bedMap.get(slot.bed);put(s,slot.cell,p?.name||'');bind(s,slot.cell,p,'name');if(key==='food'){put(s,slot.mealCell,p?.meal||'');bind(s,slot.mealCell,p,'meal');}}
-   for(const slot of seed.slots){const p=bedMap.get(slot.bed);w.sheets[s].patches[slot.cell].style=ns.style(w.sheets[s].cells[slot.cell]?.style||0,colorOf(p));}
+   for(const slot of seed.slots){const p=bedMap.get(slot.bed),color=colorOf(p);w.sheets[s].patches[slot.cell].style=ns.style(w.sheets[s].cells[slot.cell]?.style||0,color);if(key==='food')w.sheets[s].patches[slot.mealCell].style=ns.style(w.sheets[s].cells[slot.mealCell]?.style||0,color);}
    if(key==='map'){put(s,'D21',dateSerial(date),'TODAY()');put(s,'C23',`　　　${people.size}床（入所中）`);}
    else {
     for(const sn of ['談話','Ａ','Ｂ'])for(const [r,c] of Object.entries(w.sheets[sn].cells))if(c.formula){const refs=[...c.formula.matchAll(/元データ!\$?([A-Z]+)\$?(\d+)/g)];if(!refs.length)throw Error('食事用紙の式を確認してください：'+sn+'!'+r);put(sn,r,get(w,'元データ',refs[0][1]+refs[0][2]),c.formula);}
