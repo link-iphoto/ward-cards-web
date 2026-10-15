@@ -1,0 +1,9 @@
+#web-start[hidden],#web-app[hidden]{display:none!important}
+.web-start{min-height:100vh;display:grid;place-items:center;padding:24px;background:var(--paper);color:var(--ink)}
+.web-start-card{width:min(740px,100%);padding:28px;background:var(--surface,var(--white));border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 40px #0002}
+.web-start-card h1{margin:0 0 8px}.web-start-card>p{color:var(--muted)}
+.web-step{border:1px solid var(--line);border-radius:8px;padding:15px;margin:14px 0;background:var(--canvas,var(--white))}
+.web-step h2{margin:0 0 4px}.web-step p{font-size:12px;color:var(--muted)}.web-step small{display:block;margin-top:7px;color:var(--muted)}
+.web-file{display:inline-flex;align-items:center;gap:7px;margin-left:10px;font-size:12px;color:var(--ink)}.web-file input{max-width:200px;font-size:10px}
+#web-status{min-height:24px;font-size:12px;color:var(--amber)}#web-launch{width:100%;padding:10px}.web-note{font-size:11px;margin-top:12px}
+@media(max-width:600px){.web-start-card{padding:16px}.web-file{display:flex;margin:9px 0 0}}

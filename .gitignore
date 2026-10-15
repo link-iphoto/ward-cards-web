@@ -1,0 +1,8 @@
+*.xlsx
+*.xls
+*.json
+*.zip
+カードDB*
+DBバックアップ/
+Excelバックアップ/
+印刷用Excel/
