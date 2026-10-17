@@ -114,6 +114,7 @@
     const ids=new Set();
     for(const p of s.residents){
       if(typeof p.id!=='string'||ids.has(p.id)||typeof p.name!=='string'||typeof p.bed!=='string'||!p.bath||!p.assigned)throw Error('カードの形式が正しくありません。');ids.add(p.id);
+      if(p.weightReferences!==undefined&&(p.weightReferences===null||Array.isArray(p.weightReferences)||typeof p.weightReferences!=='object'||Object.entries(p.weightReferences).some(([month,value])=>!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)||typeof value!=='number'||!Number.isFinite(value)||value<=0)))throw Error('参照体重の形式が正しくありません。');
       for(const key of ['active','balloon','portable','toilet','bathEligible','careEligible'])if(typeof p[key]!=='boolean')throw Error('カードの設定形式が正しくありません。');
     }
     for(const key of Object.keys(GROUPS))if(!Array.isArray(s.orders[key]) || s.orders[key].length>GROUPS[key].cap || s.orders[key].some(id=>typeof id!=='string'||(!ids.has(id)&&!(key.startsWith('bath-')&&isBathBlank(id))&&!(key.startsWith('care-')&&isCareBlank(id)&&key.endsWith('-'+roomGroup({bed:careBlankRoom(id)+'-1'})))&&!s.issues.some(q=>'?'+q.id===id&&!q.resolved))))throw Error('配置データが正しくありません。');
